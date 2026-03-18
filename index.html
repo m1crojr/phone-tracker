@@ -768,7 +768,6 @@ function s2Start(phone){
   setTimeout(()=>{
     hideZoomChip(); document.getElementById('progWrap').style.display='none';
     myMarker=L.marker(PIN_S2_A,{icon:blueIcon()}).addTo(map);
-    trailLine=L.polyline([PIN_S2_A],{color:'#2f7fff',weight:2,opacity:0.7,dashArray:'4 3'}).addTo(map);
     document.getElementById('chipTitle').textContent='LIVE MOVEMENT TRACKING';
     document.getElementById('mapChip').classList.add('show');
     document.getElementById('accChip').classList.add('show');
@@ -785,7 +784,6 @@ function s2Start(phone){
       s2StepIdx++; s2UpdateCount++;
       const pos=s2Route[s2StepIdx];
       myMarker.setLatLng(pos);
-      trailLine.addLatLng(pos);
       map.panTo(pos,{animate:true,duration:0.8});
       const prev=s2Route[Math.max(0,s2StepIdx-1)];
       const speedKmh=(haversine(prev,pos)/3*3.6).toFixed(1);
