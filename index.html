@@ -692,7 +692,7 @@ function s1Start(phone){
     {tl:2,label:'HLR response OK', msg:`HLR: ${carrier.name} — active`,     type:'ok',  prog:40,delay:1200},
     {tl:3,label:'IMSI resolved',   msg:`IMSI: ${imsi}`,                      type:'data',prog:60,delay:2000},
     {tl:4,label:'Tower acquired',  msg:'Cell tower ping successful',          type:'ok',  prog:80,delay:2700},
-    {tl:5,label:'Location locked', msg:'Location lock acquired',             type:'ok',  prog:100,delay:3400},
+    {tl:5,label:'Location Found', msg:'Location lock acquired',             type:'ok',  prog:100,delay:3400},
   ];
   stages.forEach(s=>{
     setTimeout(()=>{if(s.tl>1) tlSet(s.tl-1,'done',stages[s.tl-2].label); tlSet(s.tl,'active','Processing...'); pf.style.width=s.prog+'%'; log(s.msg,s.type);},s.delay-200);
