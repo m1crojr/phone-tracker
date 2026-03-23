@@ -68,7 +68,7 @@ input[type=text]::placeholder{color:var(--text2);}
 .lm.ok{color:var(--green);}.lm.warn{color:var(--amber);}.lm.err{color:var(--red);}.lm.info{color:var(--text2);}.lm.data{color:var(--text1);}
 .map-col{flex:1;position:relative;overflow:hidden;}
 #map{width:100%;height:100%;}
-.leaflet-tile{filter:brightness(0.22) saturate(0.3) hue-rotate(200deg);}
+.leaflet-tile{filter:brightness(0.85) saturate(0.9);}
 .leaflet-container{background:#07090f;}
 .leaflet-control-scale-line{background:rgba(7,9,15,0.7);border-color:var(--border2);color:var(--text2);font-family:var(--mono);font-size:9px;}
 .scan-overlay{position:absolute;inset:0;z-index:450;pointer-events:none;display:none;}
@@ -268,7 +268,7 @@ setInterval(()=>document.getElementById('globalClock').textContent=now(),1000);
 
 window.addEventListener('DOMContentLoaded',()=>{
   map=L.map('map',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,dragging:false,zoomAnimation:true}).setView([22.5,80.9],ZOOM_START);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:''}).addTo(map);
+  L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:''}).addTo(map);
   L.control.scale({imperial:false,metric:true}).addTo(map);
   document.getElementById('phoneIn').addEventListener('keydown',e=>{if(e.key==='Enter') startTrace();});
 });
