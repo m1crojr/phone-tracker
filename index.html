@@ -3,36 +3,15 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>TeleSurv Pro — Signal Intelligence Platform</title>
-
+<title>TeleSurv Pro — Location Trace</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-
 <style>
-:root {
-  --bg0:      #07090f;
-  --bg1:      #0c0f1a;
-  --bg3:      #181e2e;
-  --border:   #1e2740;
-  --border2:  #263050;
-  --accent:   #2f7fff;
-  --accent2:  #1a5fd4;
-  --accent-g: rgba(47,127,255,0.12);
-  --amber:    #e8a020;
-  --red:      #e03c3c;
-  --green:    #22c55e;
-  --text0:    #f0f4ff;
-  --text1:    #9aaac8;
-  --text2:    #4f6082;
-  --mono:     'IBM Plex Mono', monospace;
-  --sans:     'IBM Plex Sans', sans-serif;
-}
+:root{--bg0:#07090f;--bg1:#0c0f1a;--bg3:#181e2e;--border:#1e2740;--border2:#263050;--accent:#2f7fff;--accent2:#1a5fd4;--accent-g:rgba(47,127,255,0.12);--amber:#e8a020;--red:#e03c3c;--green:#22c55e;--text0:#f0f4ff;--text1:#9aaac8;--text2:#4f6082;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg0);color:var(--text0);font-family:var(--sans);font-size:13px;display:flex;flex-direction:column;}
-
-/* TOPBAR */
 .topbar{height:48px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:20px;flex-shrink:0;z-index:100;}
 .topbar-brand{display:flex;align-items:center;gap:10px;}
 .brand-icon{width:28px;height:28px;background:var(--accent2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;}
@@ -40,7 +19,7 @@ body{background:var(--bg0);color:var(--text0);font-family:var(--sans);font-size:
 .brand-ver{font-family:var(--mono);font-size:9px;color:var(--text2);margin-top:1px;letter-spacing:0.08em;}
 .topbar-sep{width:1px;height:28px;background:var(--border);margin:0 4px;}
 .nav-tabs{display:flex;gap:2px;}
-.nav-tab{padding:5px 14px;font-size:11px;color:var(--text2);border-radius:3px;cursor:pointer;letter-spacing:0.04em;transition:all 0.15s;font-family:var(--sans);border:1px solid transparent;}
+.nav-tab{padding:5px 14px;font-size:11px;color:var(--text2);border-radius:3px;cursor:pointer;letter-spacing:0.04em;transition:all 0.15s;font-family:var(--sans);border:1px solid transparent;text-decoration:none;}
 .nav-tab:hover{background:var(--bg3);color:var(--text1);}
 .nav-tab.active{background:var(--accent-g);color:var(--accent);border-color:rgba(47,127,255,0.2);}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:16px;}
@@ -49,13 +28,8 @@ body{background:var(--bg0);color:var(--text0);font-family:var(--sans);font-size:
 .dot-green{background:var(--green);box-shadow:0 0 6px var(--green);}
 .dot-amber{background:var(--amber);box-shadow:0 0 6px var(--amber);}
 .dot-blue{background:var(--accent);box-shadow:0 0 6px var(--accent);}
-.dot-red{background:var(--red);box-shadow:0 0 8px var(--red);}
 #globalClock{font-family:var(--mono);font-size:11px;color:var(--text1);}
-
-/* LAYOUT */
 .workspace{flex:1;display:flex;overflow:hidden;}
-
-/* LEFT SIDEBAR — always visible, never changes */
 .sidebar{width:272px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
 .sb-section{border-bottom:1px solid var(--border);padding:14px 16px;flex-shrink:0;}
 .sb-head{font-family:var(--mono);font-size:9px;color:var(--text2);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
@@ -72,64 +46,43 @@ input[type=text]::placeholder{color:var(--text2);}
 .btn-danger:hover{border-color:var(--red);color:var(--red);}
 .progress-wrap{background:var(--bg0);border:1px solid var(--border);border-radius:2px;height:4px;overflow:hidden;margin-top:8px;display:none;}
 .progress-fill{height:100%;background:var(--accent);width:0%;transition:width 0.5s ease;border-radius:2px;}
-
-/* KV rows */
 .kv{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(30,39,64,0.6);gap:8px;}
 .kv:last-child{border-bottom:none;}
 .kv-k{font-size:10px;color:var(--text2);letter-spacing:0.06em;white-space:nowrap;flex-shrink:0;}
 .kv-v{font-family:var(--mono);font-size:11px;color:var(--text1);text-align:right;word-break:break-all;}
-.kv-v.hi{color:var(--text0);}
-.kv-v.blue{color:var(--accent);}
-.kv-v.red{color:var(--red);}
-
-/* Signal bars */
+.kv-v.hi{color:var(--text0);}.kv-v.blue{color:var(--accent);}
 .signal-bars{display:flex;align-items:flex-end;gap:2px;height:14px;}
 .bar{width:4px;border-radius:1px;background:var(--border2);}
 .bar.on{background:var(--green);}
-
-/* Coord block */
 .coord-block{background:var(--bg0);border:1px solid var(--border);border-radius:4px;padding:10px 12px;margin-top:4px;}
 .coord-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
 .coord-row:last-child{margin-bottom:0;}
 .coord-tag{font-size:9px;color:var(--text2);letter-spacing:0.12em;}
 .coord-val{font-family:var(--mono);font-size:12px;color:var(--accent);}
-
-/* Log */
 .log-wrap{flex:1;overflow-y:auto;padding:10px 16px;min-height:0;}
 .log-wrap::-webkit-scrollbar{width:3px;}
 .log-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
 .log-entry{display:flex;gap:8px;font-family:var(--mono);font-size:10px;line-height:1.6;margin-bottom:2px;opacity:0;animation:fadeUp 0.25s forwards;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 .lt{color:var(--text2);flex-shrink:0;}
-.lm.ok{color:var(--green);}
-.lm.warn{color:var(--amber);}
-.lm.err{color:var(--red);}
-.lm.info{color:var(--text2);}
-.lm.data{color:var(--text1);}
-
-/* MAP */
+.lm.ok{color:var(--green);}.lm.warn{color:var(--amber);}.lm.err{color:var(--red);}.lm.info{color:var(--text2);}.lm.data{color:var(--text1);}
 .map-col{flex:1;position:relative;overflow:hidden;}
 #map{width:100%;height:100%;}
 .leaflet-tile{filter:brightness(0.22) saturate(0.3) hue-rotate(200deg);}
 .leaflet-container{background:#07090f;}
 .leaflet-control-scale-line{background:rgba(7,9,15,0.7);border-color:var(--border2);color:var(--text2);font-family:var(--mono);font-size:9px;}
-
-/* SCAN OVERLAY */
 .scan-overlay{position:absolute;inset:0;z-index:450;pointer-events:none;display:none;}
 .scan-overlay.active{display:block;}
 .crosshair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;opacity:0;transition:opacity 0.3s,width 0.8s cubic-bezier(0.4,0,0.2,1),height 0.8s cubic-bezier(0.4,0,0.2,1);}
-.crosshair.visible{opacity:1;}
-.crosshair.closing{width:60px;height:60px;}
+.crosshair.visible{opacity:1;}.crosshair.closing{width:60px;height:60px;}
 .ch-line{position:absolute;background:rgba(47,127,255,0.7);}
 .ch-top{top:0;left:50%;width:1px;height:35%;transform:translateX(-50%);}
 .ch-bot{bottom:0;left:50%;width:1px;height:35%;transform:translateX(-50%);}
 .ch-left{left:0;top:50%;height:1px;width:35%;transform:translateY(-50%);}
 .ch-right{right:0;top:50%;height:1px;width:35%;transform:translateY(-50%);}
 .ch-corner{position:absolute;width:18px;height:18px;border-color:var(--accent);border-style:solid;}
-.ch-tl{top:0;left:0;border-width:2px 0 0 2px;}
-.ch-tr{top:0;right:0;border-width:2px 2px 0 0;}
-.ch-bl{bottom:0;left:0;border-width:0 0 2px 2px;}
-.ch-br{bottom:0;right:0;border-width:0 2px 2px 0;}
+.ch-tl{top:0;left:0;border-width:2px 0 0 2px;}.ch-tr{top:0;right:0;border-width:2px 2px 0 0;}
+.ch-bl{bottom:0;left:0;border-width:0 0 2px 2px;}.ch-br{bottom:0;right:0;border-width:0 2px 2px 0;}
 .scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(47,127,255,0.6),transparent);top:0;}
 .scan-line.sweeping{animation:sweep 1.6s ease-in-out infinite;}
 @keyframes sweep{0%{top:10%;}100%{top:90%;}}
@@ -144,10 +97,6 @@ input[type=text]::placeholder{color:var(--text2);}
 @keyframes flashIn{0%{opacity:0;}30%{opacity:1;}100%{opacity:0;}}
 .lock-stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-70px);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.2em;color:var(--accent);background:rgba(7,9,15,0.85);border:1px solid var(--accent);padding:4px 12px;border-radius:2px;opacity:0;pointer-events:none;transition:opacity 0.4s;}
 .lock-stamp.show{opacity:1;}
-.alert-stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-70px);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.2em;color:var(--red);background:rgba(7,9,15,0.9);border:1px solid var(--red);padding:4px 12px;border-radius:2px;opacity:0;pointer-events:none;transition:opacity 0.4s;z-index:460;}
-.alert-stamp.show{opacity:1;}
-
-/* MAP CHIPS */
 .map-chip{position:absolute;top:12px;left:12px;z-index:500;background:rgba(7,9,15,0.88);border:1px solid var(--border2);border-radius:4px;padding:8px 12px;font-family:var(--mono);font-size:10px;color:var(--text1);display:none;backdrop-filter:blur(6px);line-height:1.8;min-width:210px;}
 .map-chip.show{display:block;}
 .chip-title{font-size:9px;color:var(--text2);letter-spacing:0.14em;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--border);}
@@ -156,26 +105,17 @@ input[type=text]::placeholder{color:var(--text2);}
 .acc-chip{position:absolute;bottom:28px;left:12px;z-index:500;background:rgba(7,9,15,0.85);border:1px solid var(--border2);border-radius:4px;padding:6px 12px;font-family:var(--mono);font-size:10px;color:var(--text2);display:none;backdrop-filter:blur(4px);}
 .acc-chip.show{display:flex;gap:10px;align-items:center;}
 .adot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);}
-.unk-chip{position:absolute;top:12px;right:12px;z-index:500;background:rgba(7,9,15,0.92);border:1px solid rgba(224,60,60,0.4);border-radius:4px;padding:8px 12px;font-family:var(--mono);font-size:10px;color:var(--text1);display:none;backdrop-filter:blur(6px);line-height:1.8;min-width:190px;}
-.unk-chip.show{display:block;}
 .zoom-chip{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:500;background:rgba(7,9,15,0.9);border:1px solid var(--border2);border-radius:3px;padding:5px 16px;font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:0.12em;opacity:0;transition:opacity 0.4s;pointer-events:none;white-space:nowrap;}
 .zoom-chip.show{opacity:1;}
-
-/* RIGHT PANEL — always visible, never changes */
 .panel-right{width:240px;flex-shrink:0;background:var(--bg1);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
 .pr-section{border-bottom:1px solid var(--border);padding:12px 14px;flex-shrink:0;}
-
-/* Timeline */
 .timeline{padding:6px 0;}
 .tl-item{display:flex;gap:10px;font-size:10px;margin-bottom:8px;}
 .tl-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0;margin-top:3px;border:1px solid var(--border2);}
 .tl-dot.active{background:var(--accent);border-color:var(--accent);box-shadow:0 0 6px var(--accent);}
 .tl-dot.done{background:var(--green);border-color:var(--green);}
-.tl-dot.alert{background:var(--red);border-color:var(--red);box-shadow:0 0 6px var(--red);}
 .tl-text{color:var(--text2);}
 .tl-text span{color:var(--text1);display:block;}
-
-/* Tower list */
 .tower-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(30,39,64,0.5);font-size:10px;}
 .tower-item:last-child{border-bottom:none;}
 .tower-icon{font-size:12px;flex-shrink:0;}
@@ -183,37 +123,21 @@ input[type=text]::placeholder{color:var(--text2);}
 .tower-dist{margin-left:auto;color:var(--text2);font-family:var(--mono);font-size:9px;}
 .tower-bar{width:30px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
 .tower-fill{height:100%;background:var(--accent);border-radius:2px;}
-
-/* Waveform */
 .waveform{width:100%;height:40px;margin-top:8px;opacity:0.6;}
-
-/* Threat box — lives in right panel, shown only in scene 3 */
-.threat-box{background:rgba(224,60,60,0.05);border:1px solid rgba(224,60,60,0.2);border-radius:4px;padding:8px 10px;margin-top:8px;display:none;}
-.threat-box.show{display:block;}
-.threat-head{font-family:var(--mono);font-size:9px;color:var(--red);letter-spacing:0.14em;margin-bottom:6px;}
-.threat-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;padding:3px 0;border-bottom:1px solid rgba(224,60,60,0.1);}
-.threat-row:last-child{border-bottom:none;}
-.threat-k{color:var(--text2);font-size:9px;}
-.threat-v{color:var(--red);}
 </style>
 </head>
 <body>
-
-<!-- TOPBAR -->
 <div class="topbar">
   <div class="topbar-brand">
     <div class="brand-icon">📡</div>
-    <div>
-      <div class="brand-name">TeleSurv Pro</div>
-      <div class="brand-ver">Signal Intelligence Platform v4.2.1</div>
-    </div>
+    <div><div class="brand-name">TeleSurv Pro</div><div class="brand-ver">Signal Intelligence Platform v4.2.1</div></div>
   </div>
   <div class="topbar-sep"></div>
   <div class="nav-tabs">
-    <div class="nav-tab active" id="tab0" onclick="switchScene(0)">Location Trace</div>
-    <div class="nav-tab"        id="tab1" onclick="switchScene(1)">Cell Analysis</div>
-    <div class="nav-tab"        id="tab2" onclick="switchScene(2)">History</div>
-    <div class="nav-tab"        id="tab3">Reports</div>
+    <a class="nav-tab active" href="scenario1.html">Location Trace</a>
+    <a class="nav-tab" href="scenario2.html">Cell Analysis</a>
+    <a class="nav-tab" href="scenario3.html">History</a>
+    <div class="nav-tab">Reports</div>
   </div>
   <div class="topbar-right">
     <div class="sys-badge"><div class="dot dot-green"></div>DB Connected</div>
@@ -222,71 +146,54 @@ input[type=text]::placeholder{color:var(--text2);}
     <div id="globalClock">--:--:--</div>
   </div>
 </div>
-
-<!-- WORKSPACE -->
 <div class="workspace">
-
-  <!-- ══ LEFT SIDEBAR — single instance, always present ══ -->
   <div class="sidebar">
     <div class="sb-section">
       <div class="sb-head">Query</div>
       <div class="field-label">MSISDN / Phone Number</div>
       <div class="input-row">
         <input type="text" id="phoneIn" placeholder="+91 XXXXXXXXXX" maxlength="15"/>
-        <button class="btn-primary" id="btnStart" onclick="sceneStart()">TRACE</button>
+        <button class="btn-primary" id="btnStart" onclick="startTrace()">TRACE</button>
       </div>
-      <button class="btn-danger" id="btnStop" onclick="sceneStop()">■ &nbsp;TERMINATE SESSION</button>
+      <button class="btn-danger" id="btnStop" onclick="stopTrace()">■ &nbsp;TERMINATE SESSION</button>
       <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
     </div>
-
     <div class="sb-section">
       <div class="sb-head">Signal Intelligence</div>
-      <div class="kv"><span class="kv-k">MSISDN</span>  <span class="kv-v hi"   id="iMSISDN">—</span></div>
-      <div class="kv"><span class="kv-k">Carrier</span> <span class="kv-v blue" id="iCarrier">—</span></div>
-      <div class="kv"><span class="kv-k">Network</span> <span class="kv-v"      id="iNetwork">—</span></div>
-      <div class="kv"><span class="kv-k">IMSI</span>    <span class="kv-v"      id="iIMSI">—</span></div>
-      <div class="kv"><span class="kv-k">MCC-MNC</span> <span class="kv-v"      id="iMCC">—</span></div>
-      <div class="kv">
-        <span class="kv-k">Signal</span>
+      <div class="kv"><span class="kv-k">MSISDN</span><span class="kv-v hi" id="iMSISDN">—</span></div>
+      <div class="kv"><span class="kv-k">Carrier</span><span class="kv-v blue" id="iCarrier">—</span></div>
+      <div class="kv"><span class="kv-k">Network</span><span class="kv-v" id="iNetwork">—</span></div>
+      <div class="kv"><span class="kv-k">IMSI</span><span class="kv-v" id="iIMSI">—</span></div>
+      <div class="kv"><span class="kv-k">MCC-MNC</span><span class="kv-v" id="iMCC">—</span></div>
+      <div class="kv"><span class="kv-k">Signal</span>
         <div class="signal-bars" id="sigBars">
-          <div class="bar" style="height:4px"></div>
-          <div class="bar" style="height:7px"></div>
-          <div class="bar" style="height:10px"></div>
-          <div class="bar" style="height:13px"></div>
+          <div class="bar" style="height:4px"></div><div class="bar" style="height:7px"></div>
+          <div class="bar" style="height:10px"></div><div class="bar" style="height:13px"></div>
           <div class="bar" style="height:16px"></div>
         </div>
       </div>
       <div class="kv"><span class="kv-k">Last Ping</span><span class="kv-v" id="iLastPing">—</span></div>
     </div>
-
     <div class="sb-section">
       <div class="sb-head">Coordinates</div>
       <div class="coord-block">
-        <div class="coord-row"><span class="coord-tag">LATITUDE</span> <span class="coord-val" id="cLat">—</span></div>
+        <div class="coord-row"><span class="coord-tag">LATITUDE</span><span class="coord-val" id="cLat">—</span></div>
         <div class="coord-row"><span class="coord-tag">LONGITUDE</span><span class="coord-val" id="cLng">—</span></div>
         <div class="coord-row" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">
           <span class="coord-tag">ACCURACY</span><span class="coord-val" id="cAcc" style="color:var(--amber);">—</span>
         </div>
-        <div class="coord-row">
-          <span class="coord-tag">LOCATION</span><span class="coord-val" id="cLoc" style="color:var(--text1);font-size:10px;">—</span>
-        </div>
+        <div class="coord-row"><span class="coord-tag">LOCATION</span><span class="coord-val" id="cLoc" style="color:var(--text1);font-size:10px;">—</span></div>
       </div>
     </div>
-
-    <!-- Shared activity log — persists across all tabs -->
-    <div class="log-wrap" id="sharedLog">
+    <div class="log-wrap" id="logBox">
       <div class="log-entry"><span class="lt">—</span><span class="lm info">Platform ready. Awaiting query.</span></div>
     </div>
   </div>
 
-  <!-- ══ MAP ══ -->
   <div class="map-col">
     <div id="map"></div>
-
     <div class="scan-overlay" id="scanOverlay">
-      <div class="ring" id="ring1"></div>
-      <div class="ring" id="ring2"></div>
-      <div class="ring" id="ring3"></div>
+      <div class="ring" id="ring1"></div><div class="ring" id="ring2"></div><div class="ring" id="ring3"></div>
       <div class="scan-line" id="scanLine"></div>
       <div class="crosshair" id="crosshair">
         <div class="ch-line ch-top"></div><div class="ch-line ch-bot"></div>
@@ -295,245 +202,101 @@ input[type=text]::placeholder{color:var(--text2);}
         <div class="ch-corner ch-bl"></div><div class="ch-corner ch-br"></div>
       </div>
       <div class="lock-flash" id="lockFlash"></div>
-      <div class="lock-stamp" id="lockStamp">◉ &nbsp;LOCATION FOUND</div>
+      <div class="lock-stamp" id="lockStamp">◉ &nbsp;LOCATION LOCKED</div>
     </div>
-
-    <div class="alert-stamp" id="alertStamp">⚠ &nbsp;UNKNOWN SIGNAL APPROACHING</div>
-
     <div class="map-chip" id="mapChip">
-      <div class="chip-title" id="chipTitle">ACTIVE TRACE — LIVE</div>
-      <div class="chip-row"><span>Tower</span>  <span id="chTower">—</span></div>
-      <div class="chip-row"><span>LAC</span>    <span id="chLAC">—</span></div>
+      <div class="chip-title">ACTIVE TRACE — LIVE</div>
+      <div class="chip-row"><span>Tower</span><span id="chTower">—</span></div>
+      <div class="chip-row"><span>LAC</span><span id="chLAC">—</span></div>
       <div class="chip-row"><span>Cell ID</span><span id="chCell">—</span></div>
-      <div class="chip-row"><span>Ping</span>   <span id="chPing">—</span></div>
+      <div class="chip-row"><span>Ping</span><span id="chPing">—</span></div>
       <div class="chip-row"><span>Updated</span><span id="chTime">—</span></div>
     </div>
-
-    <div class="acc-chip" id="accChip">
-      <div class="adot"></div>
-      <span id="accText">GPS accuracy ±— m</span>
-    </div>
-
-    <div class="unk-chip" id="unkChip">
-      <div class="chip-title" style="color:var(--red);letter-spacing:0.14em;">UNIDENTIFIED SIGNAL</div>
-      <div class="chip-row"><span>Freq</span>    <span id="unkFreq">—</span></div>
-      <div class="chip-row"><span>Power</span>   <span id="unkPower">—</span></div>
-      <div class="chip-row"><span>Distance</span><span id="unkDist">—</span></div>
-      <div class="chip-row"><span>Closing</span> <span id="unkClosing" style="color:var(--red);">—</span></div>
-    </div>
-
+    <div class="acc-chip" id="accChip"><div class="adot"></div><span id="accText">GPS accuracy ±— m</span></div>
     <div class="zoom-chip" id="zoomChip"></div>
   </div>
 
-  <!-- ══ RIGHT PANEL — single instance, always present ══ -->
   <div class="panel-right">
-
     <div class="pr-section">
       <div class="sb-head">Trace Pipeline</div>
       <div class="timeline">
-        <div class="tl-item"><div class="tl-dot" id="tl1"></div><div class="tl-text"><span id="tl1l">MSISDN Lookup</span><span id="tl1s">Pending</span></div></div>
-        <div class="tl-item"><div class="tl-dot" id="tl2"></div><div class="tl-text"><span id="tl2l">HLR Query</span><span id="tl2s">Pending</span></div></div>
-        <div class="tl-item"><div class="tl-dot" id="tl3"></div><div class="tl-text"><span id="tl3l">IMSI Resolution</span><span id="tl3s">Pending</span></div></div>
-        <div class="tl-item"><div class="tl-dot" id="tl4"></div><div class="tl-text"><span id="tl4l">Cell Tower Ping</span><span id="tl4s">Pending</span></div></div>
-        <div class="tl-item"><div class="tl-dot" id="tl5"></div><div class="tl-text"><span id="tl5l">Location Lock</span><span id="tl5s">Pending</span></div></div>
-      </div>
-      <!-- Threat info — shown only during scene 3 alert -->
-      <div class="threat-box" id="threatBox">
-        <div class="threat-head">⚠ UNKNOWN SIGNAL DETECTED</div>
-        <div class="threat-row"><span class="threat-k">DEVICE ID</span><span class="threat-v" id="tDevID">—</span></div>
-        <div class="threat-row"><span class="threat-k">PROTOCOL</span><span class="threat-v" id="tProto">—</span></div>
-        <div class="threat-row"><span class="threat-k">DISTANCE</span><span class="threat-v" id="tDist">—</span></div>
-        <div class="threat-row"><span class="threat-k">BEARING</span> <span class="threat-v" id="tBearing">—</span></div>
-        <div class="threat-row"><span class="threat-k">STATUS</span>  <span class="threat-v" id="tStatus">Approaching</span></div>
+        <div class="tl-item"><div class="tl-dot" id="tl1"></div><div class="tl-text">MSISDN Lookup<span id="tl1s">Pending</span></div></div>
+        <div class="tl-item"><div class="tl-dot" id="tl2"></div><div class="tl-text">HLR Query<span id="tl2s">Pending</span></div></div>
+        <div class="tl-item"><div class="tl-dot" id="tl3"></div><div class="tl-text">IMSI Resolution<span id="tl3s">Pending</span></div></div>
+        <div class="tl-item"><div class="tl-dot" id="tl4"></div><div class="tl-text">Cell Tower Ping<span id="tl4s">Pending</span></div></div>
+        <div class="tl-item"><div class="tl-dot" id="tl5"></div><div class="tl-text">Location Lock<span id="tl5s">Pending</span></div></div>
       </div>
     </div>
-
     <div class="pr-section">
       <div class="sb-head">Nearby Towers</div>
       <div id="towerList"><div style="font-size:10px;color:var(--text2);font-family:var(--mono);">No data</div></div>
     </div>
-
     <div class="pr-section" style="flex:1;overflow:hidden;">
       <div class="sb-head">Signal Strength</div>
       <svg class="waveform" viewBox="0 0 200 40" preserveAspectRatio="none">
         <polyline id="wfLine" points="0,20 200,20" fill="none" stroke="#1e2740" stroke-width="1.5"/>
       </svg>
       <div style="margin-top:8px;">
-        <div class="kv"><span class="kv-k">RSSI</span>     <span class="kv-v" id="rssiVal">—</span></div>
-        <div class="kv"><span class="kv-k">RSRP</span>     <span class="kv-v" id="rsrpVal">—</span></div>
-        <div class="kv"><span class="kv-k">SINR</span>     <span class="kv-v" id="sinrVal">—</span></div>
+        <div class="kv"><span class="kv-k">RSSI</span><span class="kv-v" id="rssiVal">—</span></div>
+        <div class="kv"><span class="kv-k">RSRP</span><span class="kv-v" id="rsrpVal">—</span></div>
+        <div class="kv"><span class="kv-k">SINR</span><span class="kv-v" id="sinrVal">—</span></div>
         <div class="kv"><span class="kv-k">Handovers</span><span class="kv-v" id="hoVal">—</span></div>
       </div>
     </div>
-
-  </div><!-- /panel-right -->
-
-</div><!-- /workspace -->
+  </div>
+</div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-// CONSTANTS
-// ═══════════════════════════════════════════════════════════
-const PIN_S1    = [24.539595315713196, 81.29817529035319];
-const PIN_S2_A  = [24.539595315713196, 81.29817529035319];
-const PIN_S2_B  = [24.558285061112866, 81.29632322527857];
-const PIN_S3    = [24.558285061112866, 81.29632322527857];
-const UNK_START = [24.564, 81.304];
-
-const ZOOM_START = 5;
-const ZOOM_FINAL = 16;
-const ZOOM_STEPS = [
-  {zoom:5,  label:'Satellite uplink...',     delay:0   },
-  {zoom:8,  label:'Region narrowing...',     delay:1200},
-  {zoom:11, label:'City triangulation...',   delay:2400},
-  {zoom:13, label:'District scan...',        delay:3500},
-  {zoom:15, label:'Cell sector acquired...', delay:4500},
-  {zoom:16, label:'Locking coordinates...',  delay:5400},
+const PIN=[24.539595315713196,81.29817529035319];
+const ZOOM_START=5,ZOOM_FINAL=16;
+const ZOOM_STEPS=[
+  {zoom:5,label:'Satellite uplink...',delay:0},
+  {zoom:8,label:'Region narrowing...',delay:1200},
+  {zoom:11,label:'City triangulation...',delay:2400},
+  {zoom:13,label:'District scan...',delay:3500},
+  {zoom:15,label:'Cell sector acquired...',delay:4500},
+  {zoom:16,label:'Locking coordinates...',delay:5400},
 ];
-
-const CARRIERS    = [{name:'Jio Infocomm',mcc:'404-73'},{name:'Airtel',mcc:'404-10'},{name:'Vi (Vodafone)',mcc:'404-20'},{name:'BSNL',mcc:'404-07'}];
-const NETWORKS    = ['4G LTE','5G NR SA','5G NSA','4G VoLTE','4G+'];
-const TOWER_NAMES = ['RWA-BTS-04-N','RWA-BTS-11-S','RWA-BTS-07-E','RWA-BTS-02-C','RWA-BTS-09-W','RWA-BTS-15-NE'];
-
-// Pipeline labels per scene (5 steps each)
-const TL_LABELS = {
-  0: ['MSISDN Lookup','HLR Query','IMSI Resolution','Cell Tower Ping','Location Lock'],
-  1: ['Signal Acquired','GPS Lock','Live Tracking','Route Estimated','Destination Est.'],
-  2: ['Self Lock','RF Scan Active','Signal Detected','Approach Vector','Proximity Alert'],
-};
-
-// Button labels per scene
-const BTN_START = ['TRACE','START','MONITOR'];
-const BTN_STOP  = ['■  TERMINATE SESSION','■  STOP TRACKING','■  END SESSION'];
-
-// ═══════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════
-let map, currentScene=0, sessionActive=false;
-let pingInterval=null, unkInterval=null, s3RfInterval=null;
-let myMarker, myCircle, trailLine, unkMarker, unkCircle;
-let wfPts=[], wfHandovers=0;
-const S2_STEPS=28;
-let s2Route=[], s2StepIdx=0, s2UpdateCount=0;
-
-// ═══════════════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════════════
+const CARRIERS=[{name:'Jio Infocomm',mcc:'404-73'},{name:'Airtel',mcc:'404-10'},{name:'Vi (Vodafone)',mcc:'404-20'},{name:'BSNL',mcc:'404-07'}];
+const NETWORKS=['4G LTE','5G NR SA','5G NSA','4G VoLTE','4G+'];
+const TOWERS=['RWA-BTS-04-N','RWA-BTS-11-S','RWA-BTS-07-E','RWA-BTS-02-C','RWA-BTS-09-W','RWA-BTS-15-NE'];
 const ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const now=()=>new Date().toLocaleTimeString('en-GB');
-const haversine=(a,b)=>{
-  const R=6371000,dLat=(b[0]-a[0])*Math.PI/180,dLng=(b[1]-a[1])*Math.PI/180;
-  const x=Math.sin(dLat/2)**2+Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLng/2)**2;
-  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
-};
+let map,myMarker,myCircle,pingInterval,wfPts=[],wfHandovers=0;
+
 setInterval(()=>document.getElementById('globalClock').textContent=now(),1000);
 
-// ═══════════════════════════════════════════════════════════
-// MAP INIT
-// ═══════════════════════════════════════════════════════════
-function initMap(){
-  if(map)return;
-  map=L.map('map',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,dragging:false,zoomAnimation:true})
-        .setView([22.5,80.9],ZOOM_START);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+window.addEventListener('DOMContentLoaded',()=>{
+  map=L.map('map',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,dragging:false,zoomAnimation:true}).setView([22.5,80.9],ZOOM_START);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:''}).addTo(map);
   L.control.scale({imperial:false,metric:true}).addTo(map);
-}
+  document.getElementById('phoneIn').addEventListener('keydown',e=>{if(e.key==='Enter') startTrace();});
+});
 
-// ═══════════════════════════════════════════════════════════
-// SCENE SWITCHING
-// ═══════════════════════════════════════════════════════════
-function switchScene(n){
-  if(n===3)return;
-  if(sessionActive) sceneStop();
-  currentScene=n;
-  [0,1,2].forEach(i=>document.getElementById(`tab${i}`).classList.toggle('active',i===n));
-  // Update button labels for the new scene
-  document.getElementById('btnStart').textContent=BTN_START[n];
-  document.getElementById('btnStop').textContent=BTN_STOP[n];
-  // Relabel pipeline steps
-  TL_LABELS[n].forEach((l,i)=>document.getElementById(`tl${i+1}l`).textContent=l);
-  resetToIdle();
-}
-
-// ═══════════════════════════════════════════════════════════
-// UI HELPERS
-// ═══════════════════════════════════════════════════════════
 function log(msg,type='info'){
-  const box=document.getElementById('sharedLog');
+  const box=document.getElementById('logBox');
   const el=document.createElement('div');
   el.className='log-entry';
   el.innerHTML=`<span class="lt">${now()}</span><span class="lm ${type}">${msg}</span>`;
-  box.appendChild(el); box.scrollTop=box.scrollHeight;
+  box.appendChild(el);box.scrollTop=box.scrollHeight;
 }
-function setStat(dot,lbl){
-  document.getElementById('sysStatDot').className=`dot ${dot}`;
-  document.getElementById('sysStatLbl').textContent=lbl;
-}
-function showZoomChip(t){const c=document.getElementById('zoomChip');c.textContent=t;c.classList.add('show');}
-function hideZoomChip(){document.getElementById('zoomChip').classList.remove('show');}
-function hideChips(){['mapChip','accChip','unkChip'].forEach(id=>document.getElementById(id).classList.remove('show'));}
-
+function setStat(dot,lbl){document.getElementById('sysStatDot').className=`dot ${dot}`;document.getElementById('sysStatLbl').textContent=lbl;}
+function showZC(t){const c=document.getElementById('zoomChip');c.textContent=t;c.classList.add('show');}
+function hideZC(){document.getElementById('zoomChip').classList.remove('show');}
 function tlSet(n,state,text){
-  document.getElementById(`tl${n}`).className='tl-dot'+(state==='active'?' active':state==='done'?' done':state==='alert'?' alert':'');
+  document.getElementById(`tl${n}`).className='tl-dot'+(state==='active'?' active':state==='done'?' done':'');
   document.getElementById(`tl${n}s`).textContent=text;
 }
-function tlReset(){for(let i=1;i<=5;i++) tlSet(i,'','Pending');}
-
-function updateBars(pct){
-  const bars=document.querySelectorAll('#sigBars .bar');
-  const n=Math.round((pct/100)*5);
-  bars.forEach((b,i)=>b.classList.toggle('on',i<n));
-}
-function pushWf(y){
-  wfPts.push(y); if(wfPts.length>40) wfPts.shift();
-  document.getElementById('wfLine').setAttribute('points',wfPts.map((p,i)=>`${i*5},${p}`).join(' '));
-  document.getElementById('wfLine').setAttribute('stroke','#2f7fff');
-}
+function tlReset(){for(let i=1;i<=5;i++)tlSet(i,'','Pending');}
+function updateBars(pct){const bars=document.querySelectorAll('#sigBars .bar');const n=Math.round((pct/100)*5);bars.forEach((b,i)=>b.classList.toggle('on',i<n));}
+function pushWf(y){wfPts.push(y);if(wfPts.length>40)wfPts.shift();document.getElementById('wfLine').setAttribute('points',wfPts.map((p,i)=>`${i*5},${p}`).join(' '));document.getElementById('wfLine').setAttribute('stroke','#2f7fff');}
 function renderTowers(){
-  const list=document.getElementById('towerList');
-  list.innerHTML='';
-  [...TOWER_NAMES].sort(()=>Math.random()-0.5).slice(0,4).forEach((t,i)=>{
-    const dist=(Math.random()*1.2+0.15).toFixed(2);
-    const pct=Math.max(15,100-i*20-ri(0,14));
+  const list=document.getElementById('towerList');list.innerHTML='';
+  [...TOWERS].sort(()=>Math.random()-0.5).slice(0,4).forEach((t,i)=>{
+    const dist=(Math.random()*1.2+0.15).toFixed(2),pct=Math.max(15,100-i*20-ri(0,14));
     list.innerHTML+=`<div class="tower-item"><div class="tower-icon">📶</div><div><div class="tower-name">${t}</div><div class="tower-bar"><div class="tower-fill" style="width:${pct}%"></div></div></div><div class="tower-dist">${dist} km</div></div>`;
   });
 }
-
-function resetToIdle(){
-  sessionActive=false;
-  clearAllIntervals(); clearMapLayers();
-  ['iMSISDN','iCarrier','iNetwork','iIMSI','iMCC','iLastPing','cLat','cLng','cAcc','cLoc'].forEach(id=>document.getElementById(id).textContent='—');
-  updateBars(0); tlReset();
-  ['rssiVal','rsrpVal','sinrVal','hoVal'].forEach(id=>document.getElementById(id).textContent='—');
-  wfPts=[]; wfHandovers=0;
-  document.getElementById('wfLine').setAttribute('points','0,20 200,20');
-  document.getElementById('wfLine').setAttribute('stroke','#1e2740');
-  document.getElementById('towerList').innerHTML='<div style="font-size:10px;color:var(--text2);font-family:var(--mono);">No data</div>';
-  document.getElementById('threatBox').classList.remove('show');
-  document.getElementById('btnStart').disabled=false;
-  document.getElementById('btnStop').style.display='none';
-  document.getElementById('progWrap').style.display='none';
-  document.getElementById('progFill').style.width='0%';
-  hideChips(); hideZoomChip(); scanStop();
-  document.getElementById('alertStamp').classList.remove('show');
-  document.getElementById('lockFlash').style.background='rgba(47,127,255,0.06)';
-  setStat('dot-green','Idle');
-  map.setView([22.5,80.9],ZOOM_START,{animate:false});
-  map.dragging.disable(); map.scrollWheelZoom.disable();
-}
-
-function clearAllIntervals(){
-  [pingInterval,unkInterval,s3RfInterval].forEach(t=>{if(t) clearInterval(t);});
-  pingInterval=unkInterval=s3RfInterval=null;
-}
-function clearMapLayers(){
-  [myMarker,myCircle,trailLine,unkMarker,unkCircle].forEach(l=>{if(l){try{map.removeLayer(l);}catch(e){}}});
-  myMarker=myCircle=trailLine=unkMarker=unkCircle=null;
-}
-
-// ═══════════════════════════════════════════════════════════
-// SCAN OVERLAY
-// ═══════════════════════════════════════════════════════════
 function scanStart(){
   document.getElementById('scanOverlay').classList.add('active');
   document.getElementById('scanLine').classList.add('sweeping');
@@ -547,391 +310,110 @@ function scanStop(){
   document.getElementById('lockStamp').classList.remove('show');
   document.getElementById('lockFlash').classList.remove('flash');
 }
-function crosshairAppear(){const ch=document.getElementById('crosshair');ch.classList.add('visible');setTimeout(()=>ch.classList.add('closing'),600);}
-function lockAnim(){
-  const fl=document.getElementById('lockFlash');
-  fl.style.background='rgba(47,127,255,0.06)';
-  fl.classList.remove('flash'); void fl.offsetWidth; fl.classList.add('flash');
-  setTimeout(()=>document.getElementById('lockStamp').classList.add('show'),300);
-}
-
-// ═══════════════════════════════════════════════════════════
-// MARKERS
-// ═══════════════════════════════════════════════════════════
 function blueIcon(){
-  return L.divIcon({className:'',html:`
-    <div style="position:relative;width:20px;height:20px;">
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#2f7fff;border:2.5px solid #fff;animation:mP 2s infinite;"></div>
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(47,127,255,0.35);animation:mR 2s infinite;"></div>
-    </div>
-    <style>@keyframes mP{0%,100%{box-shadow:0 0 0 0 rgba(47,127,255,0.5);}50%{box-shadow:0 0 0 10px rgba(47,127,255,0);}}@keyframes mR{0%{transform:translate(-50%,-50%) scale(0.5);opacity:1;}100%{transform:translate(-50%,-50%) scale(1.8);opacity:0;}}</style>`,
-    iconSize:[20,20],iconAnchor:[10,10]});
+  return L.divIcon({className:'',html:`<div style="position:relative;width:20px;height:20px;"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#2f7fff;border:2.5px solid #fff;animation:mP 2s infinite;"></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(47,127,255,0.35);animation:mR 2s infinite;"></div></div><style>@keyframes mP{0%,100%{box-shadow:0 0 0 0 rgba(47,127,255,0.5);}50%{box-shadow:0 0 0 10px rgba(47,127,255,0);}}@keyframes mR{0%{transform:translate(-50%,-50%) scale(0.5);opacity:1;}100%{transform:translate(-50%,-50%) scale(1.8);opacity:0;}}</style>`,iconSize:[20,20],iconAnchor:[10,10]});
 }
-function redIcon(){
-  return L.divIcon({className:'',html:`
-    <div style="position:relative;width:18px;height:18px;">
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#e03c3c;border:2px solid #fff;animation:rP 1.2s infinite;"></div>
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(224,60,60,0.4);animation:rR 1.2s infinite;"></div>
-    </div>
-    <style>@keyframes rP{0%,100%{box-shadow:0 0 0 0 rgba(224,60,60,0.6);}50%{box-shadow:0 0 0 10px rgba(224,60,60,0);}}@keyframes rR{0%{transform:translate(-50%,-50%) scale(0.4);opacity:1;}100%{transform:translate(-50%,-50%) scale(1.8);opacity:0;}}</style>`,
-    iconSize:[18,18],iconAnchor:[9,9]});
-}
-
-// ═══════════════════════════════════════════════════════════
-// SHARED METRICS TICK
-// ═══════════════════════════════════════════════════════════
-function metricsTick(latLng){
-  const acc=ri(6,22), ping=ri(18,85);
-  const tower=TOWER_NAMES[ri(0,5)];
-  const lac=ri(1000,9999).toString(16).toUpperCase();
-  const cell='0x'+ri(0x1000,0xFFFF).toString(16).toUpperCase();
-  const rssi=ri(-90,-50), rsrp=ri(-120,-80), sinr=ri(5,30);
-  const sig=Math.min(100,Math.max(20,100+rssi));
-
-  if(myCircle){map.removeLayer(myCircle);}
-  myCircle=L.circle(latLng,{radius:acc,color:'#2f7fff',fillColor:'#2f7fff',fillOpacity:0.07,weight:1,dashArray:'3 4'}).addTo(map);
-
-  // Map chip
+function metricsTick(){
+  const acc=ri(6,22),ping=ri(18,85),tower=TOWERS[ri(0,5)],lac=ri(1000,9999).toString(16).toUpperCase(),cell='0x'+ri(0x1000,0xFFFF).toString(16).toUpperCase();
+  const rssi=ri(-90,-50),rsrp=ri(-120,-80),sinr=ri(5,30),sig=Math.min(100,Math.max(20,100+rssi));
+  if(myCircle)map.removeLayer(myCircle);
+  myCircle=L.circle(PIN,{radius:acc,color:'#2f7fff',fillColor:'#2f7fff',fillOpacity:0.07,weight:1,dashArray:'3 4'}).addTo(map);
   document.getElementById('chTower').textContent=tower;
   document.getElementById('chLAC').textContent=lac;
   document.getElementById('chCell').textContent=cell;
   document.getElementById('chPing').textContent=`${ping} ms`;
   document.getElementById('chTime').textContent=now();
   document.getElementById('accText').textContent=`GPS accuracy ±${acc} m`;
-
-  // Left sidebar
   document.getElementById('cAcc').textContent=`±${acc} m`;
   document.getElementById('iLastPing').textContent=`${ping} ms — ${now()}`;
-
-  // Right panel
   document.getElementById('rssiVal').textContent=`${rssi} dBm`;
   document.getElementById('rsrpVal').textContent=`${rsrp} dBm`;
   document.getElementById('sinrVal').textContent=`${sinr} dB`;
   document.getElementById('hoVal').textContent=wfHandovers;
-  updateBars(sig);
-  pushWf(40-(sig/100)*34);
-
-  if(Math.random()<0.18){wfHandovers++;log(`Handover → ${tower} (LAC: ${lac})`,'warn');if(ri(0,4)===0) renderTowers();}
+  updateBars(sig);pushWf(40-(sig/100)*34);
+  if(Math.random()<0.18){wfHandovers++;log(`Handover → ${tower} (LAC: ${lac})`,'warn');if(ri(0,4)===0)renderTowers();}
 }
 
-// ═══════════════════════════════════════════════════════════
-// SHARED SESSION BOOT / END
-// ═══════════════════════════════════════════════════════════
-function bootSession(phone){
-  sessionActive=true; wfPts=[]; wfHandovers=0;
+function startTrace(){
+  const phone=document.getElementById('phoneIn').value.trim();
+  if(!phone){log('ERROR: No MSISDN provided.','err');return;}
+  wfPts=[];wfHandovers=0;
+  const carrier=CARRIERS[ri(0,3)],network=NETWORKS[ri(0,4)];
+  const imsi=Array.from({length:15},()=>ri(0,9)).join('');
   document.getElementById('btnStart').disabled=true;
   document.getElementById('btnStop').style.display='block';
   document.getElementById('progWrap').style.display='block';
-  document.getElementById('progFill').style.width='0%';
-  setStat('dot-amber','Tracing...');
-  tlReset();
+  const pf=document.getElementById('progFill');pf.style.width='0%';
+  setStat('dot-amber','Tracing...');tlReset();
   log(`Session initiated — MSISDN: ${phone}`,'warn');
-}
-
-function populateInfo(phone,carrier,network,imsi,latLng,locName){
-  document.getElementById('iMSISDN').textContent=phone;
-  document.getElementById('iCarrier').textContent=carrier.name;
-  document.getElementById('iNetwork').textContent=network;
-  document.getElementById('iIMSI').textContent=imsi;
-  document.getElementById('iMCC').textContent=carrier.mcc;
-  document.getElementById('cLat').textContent=latLng[0].toFixed(8);
-  document.getElementById('cLng').textContent=latLng[1].toFixed(8);
-  document.getElementById('cLoc').textContent=locName;
-  renderTowers();
-}
-
-function endSession(msg='Session terminated by operator.'){
-  clearAllIntervals(); clearMapLayers();
-  sessionActive=false;
-  document.getElementById('btnStart').disabled=false;
-  document.getElementById('btnStop').style.display='none';
-  document.getElementById('progWrap').style.display='none';
-  document.getElementById('progFill').style.width='0%';
-  setStat('dot-amber','Resetting...');
-  hideChips(); scanStop();
-  document.getElementById('threatBox').classList.remove('show');
-  document.getElementById('alertStamp').classList.remove('show');
-  document.getElementById('lockFlash').style.background='rgba(47,127,255,0.06)';
-  log(msg,'warn');
-  showZoomChip('Session terminated — resetting...');
-  map.flyTo([22.5,80.9],ZOOM_START,{animate:true,duration:2.5,easeLinearity:0.15});
-  setTimeout(()=>{
-    hideZoomChip(); map.dragging.disable(); map.scrollWheelZoom.disable();
-    setStat('dot-green','Idle'); tlReset();
-    log('Map reset. Ready for new query.','info');
-  },2700);
-}
-
-// ═══════════════════════════════════════════════════════════
-// ROUTER
-// ═══════════════════════════════════════════════════════════
-function sceneStart(){
-  const phone=document.getElementById('phoneIn').value.trim();
-  if(!phone){log('ERROR: No MSISDN provided.','err');return;}
-  if(currentScene===0) s1Start(phone);
-  else if(currentScene===1) s2Start(phone);
-  else s3Start(phone);
-}
-function sceneStop(){
-  if(currentScene===0) endSession('Session terminated by operator.');
-  else if(currentScene===1) endSession('Tracking session terminated.');
-  else endSession('Session ended.');
-}
-
-// ═══════════════════════════════════════════════════════════
-// SCENE 1 — Location Trace
-// ═══════════════════════════════════════════════════════════
-function s1Start(phone){
-  bootSession(phone);
-  const carrier=CARRIERS[ri(0,3)], network=NETWORKS[ri(0,4)];
-  const imsi=Array.from({length:15},()=>ri(0,9)).join('');
-  const pf=document.getElementById('progFill');
 
   const stages=[
-    {tl:1,label:'Lookup complete', msg:`MSISDN ${phone} resolved`,          type:'ok',  prog:20,delay:500 },
-    {tl:2,label:'HLR response OK', msg:`HLR: ${carrier.name} — active`,     type:'ok',  prog:40,delay:1200},
-    {tl:3,label:'IMSI resolved',   msg:`IMSI: ${imsi}`,                      type:'data',prog:60,delay:2000},
-    {tl:4,label:'Tower acquired',  msg:'Cell tower ping successful',          type:'ok',  prog:80,delay:2700},
-    {tl:5,label:'Location Found', msg:'Location lock acquired',             type:'ok',  prog:100,delay:3400},
+    {tl:1,label:'Lookup complete',msg:`MSISDN ${phone} resolved`,type:'ok',prog:20,delay:500},
+    {tl:2,label:'HLR response OK',msg:`HLR: ${carrier.name} — active`,type:'ok',prog:40,delay:1200},
+    {tl:3,label:'IMSI resolved',msg:`IMSI: ${imsi}`,type:'data',prog:60,delay:2000},
+    {tl:4,label:'Tower acquired',msg:'Cell tower ping successful',type:'ok',prog:80,delay:2700},
+    {tl:5,label:'Location locked',msg:'Location lock acquired',type:'ok',prog:100,delay:3400},
   ];
   stages.forEach(s=>{
-    setTimeout(()=>{if(s.tl>1) tlSet(s.tl-1,'done',stages[s.tl-2].label); tlSet(s.tl,'active','Processing...'); pf.style.width=s.prog+'%'; log(s.msg,s.type);},s.delay-200);
+    setTimeout(()=>{if(s.tl>1)tlSet(s.tl-1,'done',stages[s.tl-2].label);tlSet(s.tl,'active','Processing...');pf.style.width=s.prog+'%';log(s.msg,s.type);},s.delay-200);
     setTimeout(()=>tlSet(s.tl,'done',s.label),s.delay);
   });
 
   map.setView([22.5,80.9],ZOOM_START,{animate:false});
-  map.dragging.disable(); map.scrollWheelZoom.disable();
-  scanStart(); setTimeout(()=>showZoomChip('Initialising satellite uplink...'),200);
+  map.dragging.disable();map.scrollWheelZoom.disable();
+  scanStart();setTimeout(()=>showZC('Initialising satellite uplink...'),200);
 
   ZOOM_STEPS.forEach((step,idx)=>{
-    setTimeout(()=>{
-      showZoomChip(step.label);
-      map.flyTo(PIN_S1,step.zoom,{animate:true,duration:idx===0?0.5:1.4,easeLinearity:0.25});
-    },3600+step.delay);
+    setTimeout(()=>{showZC(step.label);map.flyTo(PIN,step.zoom,{animate:true,duration:idx===0?0.5:1.4,easeLinearity:0.25});},3600+step.delay);
   });
-  setTimeout(()=>crosshairAppear(),3600+4800);
+  setTimeout(()=>{const ch=document.getElementById('crosshair');ch.classList.add('visible');setTimeout(()=>ch.classList.add('closing'),600);},3600+4800);
 
   const LOCK_T=3600+6200;
   setTimeout(()=>{
-    myMarker=L.marker(PIN_S1,{icon:blueIcon()}).addTo(map);
-    map.flyTo(PIN_S1,ZOOM_FINAL,{animate:true,duration:0.8});
-    lockAnim(); log('GPS lock confirmed. Monitoring active.','ok');
+    myMarker=L.marker(PIN,{icon:blueIcon()}).addTo(map);
+    map.flyTo(PIN,ZOOM_FINAL,{animate:true,duration:0.8});
+    const fl=document.getElementById('lockFlash');fl.classList.remove('flash');void fl.offsetWidth;fl.classList.add('flash');
+    setTimeout(()=>document.getElementById('lockStamp').classList.add('show'),300);
+    log('GPS lock confirmed. Monitoring active.','ok');
   },LOCK_T);
 
   setTimeout(()=>{
-    scanStop(); hideZoomChip();
-    map.dragging.enable(); map.scrollWheelZoom.enable();
-    document.getElementById('chipTitle').textContent='ACTIVE TRACE — LIVE';
+    scanStop();hideZC();map.dragging.enable();map.scrollWheelZoom.enable();
     document.getElementById('mapChip').classList.add('show');
     document.getElementById('accChip').classList.add('show');
     setStat('dot-blue','Active');
-    populateInfo(phone,carrier,network,imsi,PIN_S1,'Rewa, Madhya Pradesh');
+    document.getElementById('iMSISDN').textContent=phone;
+    document.getElementById('iCarrier').textContent=carrier.name;
+    document.getElementById('iNetwork').textContent=network;
+    document.getElementById('iIMSI').textContent=imsi;
+    document.getElementById('iMCC').textContent=carrier.mcc;
+    document.getElementById('cLat').textContent=PIN[0].toFixed(8);
+    document.getElementById('cLng').textContent=PIN[1].toFixed(8);
+    document.getElementById('cLoc').textContent='Rewa, Madhya Pradesh';
     document.getElementById('progWrap').style.display='none';
-    metricsTick(PIN_S1);
-    pingInterval=setInterval(()=>metricsTick(PIN_S1),4000);
+    renderTowers();metricsTick();
+    pingInterval=setInterval(metricsTick,4000);
   },LOCK_T+1400);
 }
 
-// ═══════════════════════════════════════════════════════════
-// SCENE 2 — Cell Analysis (live movement)
-// ═══════════════════════════════════════════════════════════
-function buildS2Route(){
-  const pts=[];
-  for(let i=0;i<=S2_STEPS;i++){
-    const t=i/S2_STEPS;
-    const jLat=i>0&&i<S2_STEPS?(Math.random()-0.5)*0.0004:0;
-    const jLng=i>0&&i<S2_STEPS?(Math.random()-0.5)*0.0004:0;
-    pts.push([PIN_S2_A[0]+(PIN_S2_B[0]-PIN_S2_A[0])*t+jLat, PIN_S2_A[1]+(PIN_S2_B[1]-PIN_S2_A[1])*t+jLng]);
-  }
-  return pts;
-}
-
-function s2Start(phone){
-  bootSession(phone);
-  s2Route=buildS2Route(); s2StepIdx=0; s2UpdateCount=0;
-  const carrier=CARRIERS[ri(0,3)], network=NETWORKS[ri(0,4)];
-  const imsi=Array.from({length:15},()=>ri(0,9)).join('');
-  const pf=document.getElementById('progFill');
-
-  setTimeout(()=>{tlSet(1,'active','Processing...');pf.style.width='25%';log(`Signal found: ${carrier.name}`,'ok');},400);
-  setTimeout(()=>{tlSet(1,'done','Signal found');tlSet(2,'active','Processing...');pf.style.width='50%';log('GPS lock initiated','ok');},1000);
-  setTimeout(()=>{tlSet(2,'done','GPS locked');tlSet(3,'active','Streaming...');pf.style.width='75%';log('Position streaming active','ok');},1700);
-  setTimeout(()=>{tlSet(3,'done','Live stream');tlSet(4,'active','Calculating...');pf.style.width='90%';log('Route computed','data');},2300);
-  setTimeout(()=>{tlSet(4,'done','Route set');tlSet(5,'active','Monitoring...');pf.style.width='100%';},2600);
-  setTimeout(()=>tlSet(5,'done','Active'),2900);
-
-  map.setView([22.5,80.9],ZOOM_START,{animate:false});
-  map.dragging.disable(); map.scrollWheelZoom.disable();
-  showZoomChip('Locking initial position...');
-  setTimeout(()=>map.flyTo(PIN_S2_A,15,{animate:true,duration:2.5,easeLinearity:0.2}),2800);
-
+function stopTrace(){
+  if(pingInterval){clearInterval(pingInterval);pingInterval=null;}
+  document.getElementById('btnStart').disabled=false;
+  document.getElementById('btnStop').style.display='none';
+  document.getElementById('progWrap').style.display='none';
+  ['mapChip','accChip'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  if(myCircle){map.removeLayer(myCircle);myCircle=null;}
+  if(myMarker){map.removeLayer(myMarker);myMarker=null;}
+  scanStop();log('Session terminated by operator.','warn');
+  setStat('dot-amber','Resetting...');
+  document.getElementById('zoomChip').textContent='Session terminated — resetting...';
+  document.getElementById('zoomChip').classList.add('show');
+  map.flyTo([22.5,80.9],ZOOM_START,{animate:true,duration:2.5,easeLinearity:0.15});
   setTimeout(()=>{
-    hideZoomChip(); document.getElementById('progWrap').style.display='none';
-    myMarker=L.marker(PIN_S2_A,{icon:blueIcon()}).addTo(map);
-    document.getElementById('chipTitle').textContent='LIVE MOVEMENT TRACKING';
-    document.getElementById('mapChip').classList.add('show');
-    document.getElementById('accChip').classList.add('show');
-    map.dragging.enable(); map.scrollWheelZoom.enable();
-    setStat('dot-blue','Tracking');
-    populateInfo(phone,carrier,network,imsi,PIN_S2_A,'Rewa, MP — Moving');
-    log('Live tracking active. Position updating every 3s.','ok');
-
-    pingInterval=setInterval(()=>{
-      if(s2StepIdx>=S2_STEPS){
-        clearInterval(pingInterval); pingInterval=null;
-        log('Target reached destination.','warn'); setStat('dot-amber','Destination Reached'); return;
-      }
-      s2StepIdx++; s2UpdateCount++;
-      const pos=s2Route[s2StepIdx];
-      myMarker.setLatLng(pos);
-      map.panTo(pos,{animate:true,duration:0.8});
-      const prev=s2Route[Math.max(0,s2StepIdx-1)];
-      const speedKmh=(haversine(prev,pos)/3*3.6).toFixed(1);
-      document.getElementById('cLat').textContent=pos[0].toFixed(7);
-      document.getElementById('cLng').textContent=pos[1].toFixed(7);
-      document.getElementById('cLoc').textContent=`Moving · ${speedKmh} km/h`;
-      metricsTick(pos);
-      if(s2UpdateCount%4===0) log(`Position: ${pos[0].toFixed(5)},${pos[1].toFixed(5)} · ${speedKmh} km/h`,'data');
-    },3000);
-  },5600);
+    hideZC();map.dragging.disable();map.scrollWheelZoom.disable();
+    setStat('dot-green','Idle');tlReset();log('Map reset. Ready for new query.','info');
+  },2700);
 }
-
-// ═══════════════════════════════════════════════════════════
-// SCENE 3 — History (proximity alert)
-// ═══════════════════════════════════════════════════════════
-function s3RfTick(){
-  const base=ri(-75,-50);
-  const sig=Math.min(100,Math.max(0,100+base));
-  pushWf(40-(sig/100)*34);
-  document.getElementById('rssiVal').textContent=`${base} dBm`;
-  document.getElementById('rsrpVal').textContent=`${ri(-115,-85)} dBm`;
-  document.getElementById('sinrVal').textContent=`${ri(5,25)} dB`;
-  updateBars(sig);
-}
-
-function s3Start(phone){
-  bootSession(phone);
-  const carrier=CARRIERS[ri(0,3)], network=NETWORKS[ri(0,4)];
-  const imsi=Array.from({length:15},()=>ri(0,9)).join('');
-  const pf=document.getElementById('progFill');
-
-  map.setView([22.5,80.9],ZOOM_START,{animate:false});
-  map.dragging.disable(); map.scrollWheelZoom.disable();
-  showZoomChip('Acquiring self location...');
-  tlSet(1,'active','Locking...'); pf.style.width='20%';
-  setTimeout(()=>map.flyTo(PIN_S3,15,{animate:true,duration:2.8,easeLinearity:0.2}),600);
-
-  setTimeout(()=>{
-    tlSet(1,'done','Self locked'); tlSet(2,'active','Scanning RF...'); pf.style.width='50%';
-    myMarker=L.marker(PIN_S3,{icon:blueIcon()}).addTo(map);
-    myCircle=L.circle(PIN_S3,{radius:ri(10,20),color:'#2f7fff',fillColor:'#2f7fff',fillOpacity:0.07,weight:1,dashArray:'3 4'}).addTo(map);
-    document.getElementById('chipTitle').textContent='SELF MONITORING — ACTIVE';
-    document.getElementById('mapChip').classList.add('show');
-    document.getElementById('accChip').classList.add('show');
-    document.getElementById('accText').textContent=`GPS accuracy ±${ri(8,15)} m`;
-    hideZoomChip(); map.dragging.enable(); map.scrollWheelZoom.enable();
-    setStat('dot-blue','Monitoring');
-    populateInfo(phone,carrier,network,imsi,PIN_S3,'Rewa, Madhya Pradesh');
-    document.getElementById('progWrap').style.display='none';
-    log('Self position locked. RF scanning active.','ok');
-    tlSet(2,'done','RF scan active');
-    s3RfInterval=setInterval(s3RfTick,1200);
-    renderTowers();
-  },3800);
-
-  // Detect unknown signal after 6s
-  setTimeout(()=>{
-    clearInterval(s3RfInterval); s3RfInterval=null;
-    tlSet(3,'done','Signal detected'); tlSet(4,'active','Tracking vector...');
-    document.getElementById('progWrap').style.display='block'; pf.style.width='80%';
-
-    document.getElementById('threatBox').classList.add('show');
-    const devID=`UNK-${ri(100,999)}-${String.fromCharCode(ri(65,90))}`;
-    const proto=['ISM 2.4GHz','433 MHz RF','ISM 5.8GHz'][ri(0,2)];
-    document.getElementById('tDevID').textContent=devID;
-    document.getElementById('tProto').textContent=proto;
-    document.getElementById('tStatus').textContent='Approaching';
-
-    // Spike waveform red
-    for(let i=0;i<8;i++){wfPts.push(ri(2,10));if(wfPts.length>40) wfPts.shift();}
-    document.getElementById('wfLine').setAttribute('points',wfPts.map((p,i)=>`${i*5},${p}`).join(' '));
-    document.getElementById('wfLine').setAttribute('stroke','#e03c3c');
-    document.getElementById('rssiVal').textContent=`${ri(-45,-30)} dBm`;
-
-    document.getElementById('alertStamp').classList.add('show');
-    setTimeout(()=>document.getElementById('alertStamp').classList.remove('show'),3000);
-
-    unkMarker=L.marker(UNK_START,{icon:redIcon()}).addTo(map);
-    unkCircle=L.circle(UNK_START,{radius:30,color:'#e03c3c',fillColor:'#e03c3c',fillOpacity:0.08,weight:1,dashArray:'3 4'}).addTo(map);
-    document.getElementById('unkChip').classList.add('show');
-    map.flyTo([(PIN_S3[0]+UNK_START[0])/2,(PIN_S3[1]+UNK_START[1])/2],14,{animate:true,duration:1.5});
-    log(`Unknown signal detected: ${devID}`,'err');
-    log(`Protocol: ${proto} · Approaching bearing 220°`,'warn');
-
-    tlSet(4,'done','Approach confirmed'); tlSet(5,'active','Alert active');
-    setTimeout(()=>{document.getElementById('progWrap').style.display='none';},600);
-
-    const APPROACH=15; let step=0;
-    unkInterval=setInterval(()=>{
-      step++;
-      const t=step/APPROACH;
-      const lat=UNK_START[0]+(PIN_S3[0]-UNK_START[0])*t;
-      const lng=UNK_START[1]+(PIN_S3[1]-UNK_START[1])*t;
-      const distRem=Math.round(haversine([lat,lng],PIN_S3));
-
-      unkMarker.setLatLng([lat,lng]);
-      if(unkCircle){map.removeLayer(unkCircle);}
-      unkCircle=L.circle([lat,lng],{radius:20,color:'#e03c3c',fillColor:'#e03c3c',fillOpacity:0.09,weight:1,dashArray:'3 4'}).addTo(map);
-
-      document.getElementById('tDist').textContent=`${distRem} m`;
-      document.getElementById('tBearing').textContent='220° SW';
-      document.getElementById('unkDist').textContent=`${distRem} m away`;
-      document.getElementById('unkClosing').textContent=`${Math.round(distRem/(APPROACH-step+1)+1)} m/s`;
-      document.getElementById('unkFreq').textContent=`${(ri(2400,5800)/1000).toFixed(1)} GHz`;
-      document.getElementById('unkPower').textContent=`${ri(8,28)} dBm`;
-
-      if(step<APPROACH) map.panTo([(lat+PIN_S3[0])/2,(lng+PIN_S3[1])/2],{animate:true,duration:0.8});
-
-      if(step>=APPROACH){
-        clearInterval(unkInterval); unkInterval=null;
-        map.flyTo(PIN_S3,17,{animate:true,duration:1.2});
-        unkMarker.setLatLng(PIN_S3);
-        document.getElementById('tDist').textContent='0 m — OVERLAP';
-        document.getElementById('tStatus').textContent='OVERLAPPING';
-        document.getElementById('unkDist').textContent='0 m — ON TARGET';
-        document.getElementById('unkClosing').textContent='0 m/s';
-        tlSet(5,'alert','PROXIMITY BREACH');
-        log('ALERT: Unknown signal reached target position!','err');
-        const fl=document.getElementById('lockFlash');
-        fl.style.background='rgba(224,60,60,0.1)';
-        fl.classList.remove('flash'); void fl.offsetWidth; fl.classList.add('flash');
-
-        // Signal disappears after 5s
-        setTimeout(()=>{
-          if(unkMarker){map.removeLayer(unkMarker);unkMarker=null;}
-          if(unkCircle){map.removeLayer(unkCircle);unkCircle=null;}
-          document.getElementById('unkChip').classList.remove('show');
-          document.getElementById('threatBox').classList.remove('show');
-          document.getElementById('tStatus').textContent='Approaching';
-          tlSet(5,'done','Signal lost');
-          log('Unknown signal lost — no longer detectable.','warn');
-          document.getElementById('wfLine').setAttribute('stroke','#2f7fff');
-          document.getElementById('lockFlash').style.background='rgba(47,127,255,0.06)';
-          s3RfInterval=setInterval(s3RfTick,1200);
-          map.flyTo(PIN_S3,15,{animate:true,duration:1.5});
-        },5000);
-      }
-    },1000);
-  },6000);
-}
-
-// ═══════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded',()=>{
-  initMap();
-  document.getElementById('phoneIn').addEventListener('keydown',e=>{if(e.key==='Enter') sceneStart();});
-});
 </script>
 </body>
 </html>
