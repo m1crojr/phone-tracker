@@ -44,6 +44,11 @@ input[type=text]::placeholder{color:var(--text2);}
 .btn-primary:disabled{background:var(--bg3);color:var(--text2);cursor:not-allowed;box-shadow:none;}
 .btn-danger{width:100%;background:transparent;border:1px solid var(--border2);color:var(--text1);border-radius:3px;font-family:var(--mono);font-size:10px;letter-spacing:0.08em;padding:7px;cursor:pointer;display:none;margin-top:6px;transition:all 0.15s;}
 .btn-danger:hover{border-color:var(--red);color:var(--red);}
+/* PHYSICAL VERIFICATION button */
+.btn-physver{width:100%;background:transparent;border:1px solid rgba(232,160,32,0.35);color:var(--amber);border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:0.13em;padding:7px 10px;cursor:pointer;margin-top:8px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.btn-physver:hover{border-color:var(--amber);background:rgba(232,160,32,0.07);box-shadow:0 0 12px rgba(232,160,32,0.15);}
+.btn-physver .pv-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);box-shadow:0 0 5px var(--amber);flex-shrink:0;}
+.btn-physver .pv-beta{font-size:7px;color:rgba(232,160,32,0.6);letter-spacing:0.2em;margin-left:2px;}
 .progress-wrap{background:var(--bg0);border:1px solid var(--border);border-radius:2px;height:4px;overflow:hidden;margin-top:8px;display:none;}
 .progress-fill{height:100%;background:var(--accent);width:0%;transition:width 0.5s ease;border-radius:2px;}
 .kv{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(30,39,64,0.6);gap:8px;}
@@ -156,6 +161,11 @@ input[type=text]::placeholder{color:var(--text2);}
         <button class="btn-primary" id="btnStart" onclick="startTrace()">TRACE</button>
       </div>
       <button class="btn-danger" id="btnStop" onclick="stopTrace()">■ &nbsp;TERMINATE SESSION</button>
+      <button class="btn-physver" id="btnPhysVer" onclick="togglePhysVer()">
+        <div class="pv-dot"></div>
+        PHYSICAL VERIFICATION
+        <span class="pv-beta">BETA</span>
+      </button>
       <div class="progress-wrap" id="progWrap"><div class="progress-fill" id="progFill"></div></div>
     </div>
     <div class="sb-section">
@@ -247,7 +257,13 @@ input[type=text]::placeholder{color:var(--text2);}
 </div>
 
 <script>
-const PIN=[24.539595315713196,81.29817529035319];
+// --- A/B Location Definitions ---
+const LOCATIONS = [
+  { coords: [24.539595315713196, 81.29817529035319], label: 'Rewa, Madhya Pradesh' },
+  { coords: [12.995964405842418, 77.69643328275924], label: 'Bengaluru, Karnataka' },
+];
+let locationIndex = 0; // starts at A (Rewa), toggles each trace
+
 const ZOOM_START=1,ZOOM_FINAL=16;
 const ZOOM_STEPS=[
   {zoom:1,label:'Satellite uplink...',delay:0},
@@ -314,6 +330,7 @@ function blueIcon(){
   return L.divIcon({className:'',html:`<div style="position:relative;width:20px;height:20px;"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#2f7fff;border:2.5px solid #fff;animation:mP 2s infinite;"></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(47,127,255,0.35);animation:mR 2s infinite;"></div></div><style>@keyframes mP{0%,100%{box-shadow:0 0 0 0 rgba(47,127,255,0.5);}50%{box-shadow:0 0 0 10px rgba(47,127,255,0);}}@keyframes mR{0%{transform:translate(-50%,-50%) scale(0.5);opacity:1;}100%{transform:translate(-50%,-50%) scale(1.8);opacity:0;}}</style>`,iconSize:[20,20],iconAnchor:[10,10]});
 }
 function metricsTick(){
+  const PIN=LOCATIONS[locationIndex].coords; // use current session's pin
   const acc=ri(6,22),ping=ri(18,85),tower=TOWERS[ri(0,5)],lac=ri(1000,9999).toString(16).toUpperCase(),cell='0x'+ri(0x1000,0xFFFF).toString(16).toUpperCase();
   const rssi=ri(-90,-50),rsrp=ri(-120,-80),sinr=ri(5,30),sig=Math.min(100,Math.max(20,100+rssi));
   if(myCircle)map.removeLayer(myCircle);
@@ -334,10 +351,35 @@ function metricsTick(){
   if(Math.random()<0.18){wfHandovers++;log(`Handover → ${tower} (LAC: ${lac})`,'warn');if(ri(0,4)===0)renderTowers();}
 }
 
+// Physical Verification toggle — amber glow state
+let physVerActive = false;
+function togglePhysVer(){
+  physVerActive = !physVerActive;
+  const btn = document.getElementById('btnPhysVer');
+  if(physVerActive){
+    btn.style.background='rgba(232,160,32,0.12)';
+    btn.style.borderColor='var(--amber)';
+    btn.style.boxShadow='0 0 16px rgba(232,160,32,0.2)';
+    log('Physical Verification module enabled (BETA).','warn');
+  } else {
+    btn.style.background='transparent';
+    btn.style.borderColor='rgba(232,160,32,0.35)';
+    btn.style.boxShadow='none';
+    log('Physical Verification module disabled.','info');
+  }
+}
+
 function startTrace(){
   const phone=document.getElementById('phoneIn').value.trim();
   if(!phone){log('ERROR: No MSISDN provided.','err');return;}
   wfPts=[];wfHandovers=0;
+
+  // Pick current location then toggle for next time
+  const currentLoc = LOCATIONS[locationIndex];
+  const PIN = currentLoc.coords;
+  const locationLabel = currentLoc.label;
+  locationIndex = (locationIndex + 1) % LOCATIONS.length; // toggle A→B→A→B
+
   const carrier=CARRIERS[ri(0,3)],network=NETWORKS[ri(0,4)];
   const imsi=Array.from({length:15},()=>ri(0,9)).join('');
   document.getElementById('btnStart').disabled=true;
@@ -389,10 +431,32 @@ function startTrace(){
     document.getElementById('iMCC').textContent=carrier.mcc;
     document.getElementById('cLat').textContent=PIN[0].toFixed(8);
     document.getElementById('cLng').textContent=PIN[1].toFixed(8);
-    document.getElementById('cLoc').textContent='Rewa, Madhya Pradesh';
+    document.getElementById('cLoc').textContent=locationLabel;
     document.getElementById('progWrap').style.display='none';
     renderTowers();metricsTick();
-    pingInterval=setInterval(metricsTick,4000);
+    // store PIN in closure for metricsTick
+    clearInterval(pingInterval);
+    pingInterval=setInterval(()=>{
+      // re-use same PIN for this session's ticks
+      const acc=ri(6,22),ping=ri(18,85),tower=TOWERS[ri(0,5)],lac=ri(1000,9999).toString(16).toUpperCase(),cell='0x'+ri(0x1000,0xFFFF).toString(16).toUpperCase();
+      const rssi=ri(-90,-50),rsrp=ri(-120,-80),sinr=ri(5,30),sig=Math.min(100,Math.max(20,100+rssi));
+      if(myCircle)map.removeLayer(myCircle);
+      myCircle=L.circle(PIN,{radius:acc,color:'#2f7fff',fillColor:'#2f7fff',fillOpacity:0.07,weight:1,dashArray:'3 4'}).addTo(map);
+      document.getElementById('chTower').textContent=tower;
+      document.getElementById('chLAC').textContent=lac;
+      document.getElementById('chCell').textContent=cell;
+      document.getElementById('chPing').textContent=`${ping} ms`;
+      document.getElementById('chTime').textContent=now();
+      document.getElementById('accText').textContent=`GPS accuracy ±${acc} m`;
+      document.getElementById('cAcc').textContent=`±${acc} m`;
+      document.getElementById('iLastPing').textContent=`${ping} ms — ${now()}`;
+      document.getElementById('rssiVal').textContent=`${rssi} dBm`;
+      document.getElementById('rsrpVal').textContent=`${rsrp} dBm`;
+      document.getElementById('sinrVal').textContent=`${sinr} dB`;
+      document.getElementById('hoVal').textContent=wfHandovers;
+      updateBars(sig);pushWf(40-(sig/100)*34);
+      if(Math.random()<0.18){wfHandovers++;log(`Handover → ${tower} (LAC: ${lac})`,'warn');if(ri(0,4)===0)renderTowers();}
+    },4000);
   },LOCK_T+1400);
 }
 
